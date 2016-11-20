@@ -54,7 +54,7 @@ public class AstSumAxisTest extends TestUtil {
         String[] args = a.args();
         assertEquals(3, args.length);
         String example = a.example();
-        assertTrue(example.startsWith("(sum "));
+        assertTrue(example.startsWith("(sumaxis "));
         String description = a.description();
         assertTrue("Description for AstSum is too short", description.length() > 100);
     }
