@@ -91,7 +91,8 @@ public class LocalMR<T extends MrFun<T>> extends H2O.H2OCountedCompleter<LocalMR
   public LocalMR(MrFun mrt, H2O.H2OCountedCompleter cc){this(mrt,H2O.NUMCPUS,null,cc);}
   public LocalMR(MrFun mrt, int nthreads, TaskQ taskQ, H2O.H2OCountedCompleter cc){
     super(cc);
-    if(nthreads <= 0) throw new IllegalArgumentException("nthreads must be positive");
+    if(nthreads <= 0)
+      throw new IllegalArgumentException("nthreads must be positive");
     _root = this;
     _mrFun = mrt; // used as golden copy and also will hold the result after task has finished.
     _lo = 0;
@@ -147,7 +148,6 @@ public class LocalMR<T extends MrFun<T>> extends H2O.H2OCountedCompleter<LocalMR
       try {
         _mrFun.map(mid);
       } catch (Throwable t) {
-        t.printStackTrace();
         if (_root._t == null) {
           _root._t = t;
           _root._cancelled = true;
@@ -184,8 +184,12 @@ public class LocalMR<T extends MrFun<T>> extends H2O.H2OCountedCompleter<LocalMR
       _rite = null;
       completed = true;
     } catch(Throwable t){
-      t.printStackTrace();
-      throw H2O.fail(t.getMessage());
+      if(this == _root){
+        completeExceptionally(t); // instead of throw
+      } else if (_root._t == null) {
+        _root._t = t;
+        _root._cancelled = true;
+      }
     }
   }
 }
